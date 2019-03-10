@@ -9,20 +9,13 @@ ENV UID=991 GID=991 \
     OPCACHE_MEM_SIZE=128M
 
 RUN BUILD_DEPS=" \
-    git \
     tar \
-    build-base \
-    autoconf \
-    geoip-dev \
-    libressl \
+    openssl \
     ca-certificates \
     gnupg" \
  && apk -U upgrade && apk add \
     ${BUILD_DEPS} \
-    geoip \
     tzdata \
- && pecl install geoip-1.1.1 \
- && echo 'extension=geoip.so' >> /php/conf.d/geoip.ini \
  && mkdir /matomo && cd /tmp \
  && MATOMO_TARBALL="piwik-${VERSION}.tar.gz" \
  && wget -q https://builds.matomo.org/${MATOMO_TARBALL} \
@@ -36,9 +29,7 @@ RUN BUILD_DEPS=" \
  && if [ "${FINGERPRINT}" != "${GPG_matthieu}" ]; then echo "Warning! Wrong GPG fingerprint!" && exit 1; fi \
  && echo "All seems good, now unpacking ${MATOMO_TARBALL}..." \
  && tar xzf ${MATOMO_TARBALL} --strip 1 -C /matomo \
- && wget -q https://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz -P /usr/share/GeoIP/ \
- && gzip -d /usr/share/GeoIP/GeoLiteCity.dat.gz \
- && mv /usr/share/GeoIP/GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat \
+ && cd /matomo/misc && wget -qO- https://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz | tar xz --strip 1 \
  && apk del ${BUILD_DEPS} php7-dev php7-pear \
  && rm -rf /var/cache/apk/* /tmp/* /root/.gnupg
 
