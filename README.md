@@ -1,5 +1,7 @@
 ## wonderfall/matomo
 
+⚠️**DEPRECATED** : use an official image instead.
+
 #### What is this?
 It is a web analytics platform. Matomo respects your privacy and gives you full control over your data.
 
